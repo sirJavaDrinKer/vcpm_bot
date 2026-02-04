@@ -2,6 +2,7 @@ package dev.javadrinker.vcpm;
 
 import dev.javadrinker.vcpm.commands.*;
 import dev.javadrinker.vcpm.commands.text.ArtificialAwardCommand;
+import dev.javadrinker.vcpm.commands.text.TeamByNameCommand;
 import dev.javadrinker.vcpm.commands.text.TextCommandManager;
 import dev.javadrinker.vcpm.util.Scheduler;
 import dev.javadrinker.vcpm.util.VLRTeamUtil;
@@ -54,6 +55,7 @@ public class Main {
         TextCommandManager textCommandManager = new TextCommandManager("--");
 
         textCommandManager.register(new ArtificialAwardCommand());
+        textCommandManager.register(new TeamByNameCommand());
 
         jda.addEventListener(textCommandManager);
 

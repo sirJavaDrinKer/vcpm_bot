@@ -3,6 +3,7 @@ package dev.javadrinker.vcpm.commands.text;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,11 +58,17 @@ public class TextCommandManager extends ListenerAdapter {
                 ? Arrays.asList(split).subList(1, split.length)
                 : List.of();
 
-        command.execute(new TextCommandContext(
-                event.getJDA(),
-                event.getMessage(),
-                args,
-                raw
-        ));
+        try {
+            command.execute(new TextCommandContext(
+                    event.getJDA(),
+                    event.getMessage(),
+                    args,
+                    raw
+            ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

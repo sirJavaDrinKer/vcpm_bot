@@ -2,6 +2,7 @@ package dev.javadrinker.vcpm.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,6 +21,32 @@ public final class VLRTeamUtil {
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
+
+    private static final List<String> regions = List.of(
+      "all",
+              "na",
+              "eu",
+              "br" ,
+              "ap" ,
+              "asia" ,
+              "pacific" ,
+              "kr" ,
+              "ch" ,
+              "jp" ,
+              "las" ,
+              "la-s" ,
+              "lan" ,
+              "la-n" ,
+              "oce" ,
+              "oceania" ,
+              "mena" ,
+              "gc" ,
+              "world"
+    );
+
+    public static boolean isLOADED() {
+        return LOADED;
+    }
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -41,32 +68,39 @@ public final class VLRTeamUtil {
 
         if (LOADED) return;
 
-        int page = 1;
-        boolean hasNext;
+        for (String region : regions) {
 
-        do {
-            ApiListResponse response = fetchPage(page);
+            int page = 0;
+            boolean hasNext = true;
 
-            if (response.data != null) {
-                for (TeamSummary team : response.data) {
-                    TEAM_ID_CACHE.put(team.id, team);
-                    TEAM_NAME_CACHE.put(normalize(team.name), team);
+            System.out.println("Loading teams for region: " + region);
+
+            while (hasNext) {
+                ApiListResponse response = fetchPage(page, region);
+
+                if (response.data != null) {
+                    for (TeamSummary team : response.data) {
+                        TEAM_ID_CACHE.put(team.id, team);
+                        TEAM_NAME_CACHE.put(normalize(team.name), team);
+                    }
                 }
+
+                hasNext = response.pagination != null
+                        && response.pagination.hasNextPage;
+
+                System.out.println(
+                        "Paginating teams | region=" + region +
+                                " page=" + page +
+                                " next=" + hasNext
+                );
+
+                page++;
             }
-
-
-
-            hasNext = response.pagination != null
-                    && response.pagination.hasNextPage;
-
-            System.out.println("Paginating all teams... page: "+page);
-            System.out.println("?Next: "+hasNext);
-
-            page++;
-        } while (hasNext);
+        }
 
         LOADED = true;
     }
+
 
     /** Find a team by full name */
     public static TeamSummary getTeamByName(String name)
@@ -120,12 +154,12 @@ public final class VLRTeamUtil {
        ===== INTERNAL ============
        ============================ */
 
-    private static ApiListResponse fetchPage(int page)
+    private static ApiListResponse fetchPage(int page, String region)
             throws IOException, InterruptedException {
 
         String url = BASE_URL +
-                "?region=all" +
-                "&page=" + page +
+                "?region="+ region +
+                "&page=" + page+
                 "&limit=100";
 
         HttpRequest request = HttpRequest.newBuilder()

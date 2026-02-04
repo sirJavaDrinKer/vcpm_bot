@@ -14,7 +14,10 @@ import net.dv8tion.jda.api.utils.messages.MessagePollData;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +30,17 @@ public class Scheduler {
     public static void start(JDA jda) {
         SCHEDULER.scheduleAtFixedRate(() -> {
             try {
-                updateStatus(jda);
 
-                for(Guild guild : jda.getGuilds()) {
-                    gamesAnnounceCheck(guild);
-                    checkForLiveGames(guild);
-                    checkForPastGames(guild);
+
+                if (VLRTeamUtil.isLOADED()) {
+                    updateStatus(jda);
+                    for(Guild guild : jda.getGuilds()) {
+                        gamesAnnounceCheck(guild);
+                        checkForLiveGames(guild);
+                        checkForPastGames(guild);
+                    }
+                } else {
+                    jda.getPresence().setActivity(Activity.watching("Loading teams after restart..."));
                 }
 
             } catch (Exception e) {
@@ -135,6 +143,8 @@ public class Scheduler {
         }
     }
 
+    // This will prevent in-session repetative awarding.
+    private static List<String> cachedAwards = new ArrayList<>();
 
     private static void checkForPastGames(Guild guild) {
         List<MatchUtil.PastMatch> past;
@@ -158,18 +168,24 @@ public class Scheduler {
                 MessagePoll poll = message.getPoll();
 
                 if (poll != null) {
-                    PollAwardUtil.awardFromPoll(
-                            guild,
-                            message,
-                            getWinnerTeam(match)
-                    );
+                    if (!cachedAwards.contains(guild.getId())){
+                        PollAwardUtil.awardFromPoll(
+                                guild,
+                                message,
+                                getWinnerTeam(match)
+                        );
+                        cachedAwards.add(guild.getId());
+                    }
+
 
                     System.out.println(getWinnerFlag(match));
                     EmbedBuilder embedBuilder = new EmbedBuilder();
                     embedBuilder.setTitle(getWinnerTeam(match)+" wins!");
                     embedBuilder.addField("Series details:", match.team1 + " (" + match.score1 + "-" + match.score2 + ") " + match.team2+
                             "\n["+match.tournament_name+"](https://vlr.gg"+match.match_page+")", false);
-                    embedBuilder.setThumbnail(getWinnerFlag(match));
+                    if (getWinnerFlag(match)!=null) {
+                        embedBuilder.setThumbnail(getWinnerFlag(match));
+                    }
                     embedBuilder.setFooter("Check /leaderboard to see your points.");
                     message.replyEmbeds(embedBuilder.build()).queue();
                 }
