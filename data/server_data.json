@@ -1,0 +1,47 @@
+{
+  "1116630404254928898" : {
+    "prediction_channel" : "1466780706163261717",
+    "reminder_channel" : "1466780706163261717",
+    "prediction_ids" : {
+      "detonation-focusme-vs-global-esports-vct-2026-pacific-kickoff-mr2" : "1467338756087484498",
+      "jdg-esports-vs-funplus-phoenix-vct-2026-china-kickoff-lr1" : "1467353892798074922",
+      "drx-vs-t1-vct-2026-pacific-kickoff-mr2" : "1467363921995239620",
+      "xi-lai-gaming-vs-edward-gaming-vct-2026-china-kickoff-ur3" : "1467363923454857277"
+    },
+    "user_data" : {
+      "358599549998202881" : {
+        "score" : 1,
+        "total_predictions_made" : 0
+      },
+      "387265002672750594" : {
+        "score" : 1,
+        "total_predictions_made" : 0
+      },
+      "412312584902017028" : {
+        "score" : 1,
+        "total_predictions_made" : 0
+      },
+      "527665068419317760" : {
+        "score" : 1,
+        "total_predictions_made" : 0
+      },
+      "562461666919317516" : {
+        "score" : 1,
+        "total_predictions_made" : 0
+      }
+    }
+  },
+  "1384191814126272553" : {
+    "prediction_channel" : "1467640606300962992",
+    "reminder_channel" : null,
+    "prediction_ids" : {
+      "titan-esports-club-vs-jdg-esports-vct-2026-china-kickoff-lr2" : "1468369047572713644"
+    },
+    "user_data" : {
+      "358599549998202881" : {
+        "score" : 26,
+        "total_predictions_made" : 28
+      }
+    }
+  }
+}
