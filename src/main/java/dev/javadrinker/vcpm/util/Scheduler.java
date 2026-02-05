@@ -168,13 +168,13 @@ public class Scheduler {
                 MessagePoll poll = message.getPoll();
 
                 if (poll != null) {
-                    if (!cachedAwards.contains(guild.getId())){
+                    if (!cachedAwards.contains(match.getMatchId())){
                         PollAwardUtil.awardFromPoll(
                                 guild,
                                 message,
                                 getWinnerTeam(match)
                         );
-                        cachedAwards.add(guild.getId());
+                        cachedAwards.add(match.getMatchId());
                     }
 
 
