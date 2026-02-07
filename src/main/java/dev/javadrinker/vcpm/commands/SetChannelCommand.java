@@ -2,36 +2,69 @@ package dev.javadrinker.vcpm.commands;
 
 import dev.javadrinker.vcpm.util.data.ServerDataUtil;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.util.Map;
-
 public class SetChannelCommand extends ListenerAdapter {
+
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (!event.getName().equals("set-channel")) {
+
+        if (!event.getName().equals("set-channel")) return;
+
+        if (event.getGuild() == null || event.getMember() == null) {
+            event.reply("This command can only be used in a server.")
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
-        if (!event.getMember().hasPermission((IPermissionContainer) event.getGuildChannel(), Permission.MANAGE_CHANNEL)) {
-            event.reply("You do not have permission to set the prediction channel.").setEphemeral(true).queue();
+
+        if (!event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+            event.reply("You do not have permission to configure bot channels.")
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
 
-        String type = event.getOption("type").getAsString();
-        Channel predictionChannel = event.getOption("channel").getAsChannel();
+        String type = event.getOption("type").getAsString().toLowerCase();
+        GuildChannel channel = event.getOption("channel").getAsChannel();
 
-        ServerDataUtil.setPredictionChannel(
-                event.getGuild().getId(),
-                predictionChannel.getId()
-        );
-        ServerDataUtil.ServerData serverDataUtil = ServerDataUtil.getOrCreateServer(event.getGuild().getId());
+        String guildId = event.getGuild().getId();
+        ServerDataUtil.ServerData serverData =
+                ServerDataUtil.getOrCreateServer(guildId);
 
-        event.reply(
-                "Prediction channel has been set to "
-                +predictionChannel.getAsMention()+". All predictions have been cleared."
-        ).queue();
+        switch (type) {
+
+            case "prediction" -> {
+                String oldChannel = serverData.prediction_channel;
+
+                ServerDataUtil.setPredictionChannel(guildId, channel.getId());
+
+                if (oldChannel == null || !oldChannel.equals(channel.getId())) {
+                    serverData.prediction_ids.clear();
+                    ServerDataUtil.save();
+                }
+
+                event.reply(
+                        "Prediction channel set to: " + channel.getAsMention() +
+                                "\n(All existing predictions have been cleared.)"
+                ).queue();
+            }
+
+            case "reminder" -> {
+                ServerDataUtil.setReminderChannel(guildId, channel.getId());
+
+                event.reply(
+                        "Reminder channel set to: " + channel.getAsMention()
+                ).queue();
+            }
+
+            default -> {
+                event.reply("Invalid type. Use `prediction` or `reminder`.")
+                        .setEphemeral(true)
+                        .queue();
+            }
+        }
     }
 }

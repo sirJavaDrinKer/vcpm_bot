@@ -1,6 +1,7 @@
 package dev.javadrinker.vcpm.util;
 
 import dev.javadrinker.vcpm.util.data.ServerDataUtil;
+import dev.javadrinker.vcpm.util.polls.ReminderCycle;
 import dev.javadrinker.vcpm.util.vlr.AbbreviationConverter;
 import dev.javadrinker.vcpm.util.data.MatchDataUtil;
 import dev.javadrinker.vcpm.util.data.TeamDataUtil;
@@ -27,13 +28,15 @@ public class Scheduler {
                 if (!TeamDataUtil.isFileCacheEmpty()) {
                     updateStatus(jda);
                     for(Guild guild : jda.getGuilds()) {
-                        if (!ServerDataUtil.getPredictionsEnabled(guild.getId())) {
-                            continue;
+                        if (ServerDataUtil.getPredictionsEnabled(guild.getId())) {
+                            gamesAnnounceCheck(guild);
+                            checkForLiveGames(guild);
+                            checkForPastGames(guild);
                         }
 
-                        gamesAnnounceCheck(guild);
-                        checkForLiveGames(guild);
-                        checkForPastGames(guild);
+                        ReminderCycle.sendNewReminders(guild);
+                        ReminderCycle.removeOldReminders(guild);
+
                     }
                 } else {
                     jda.getPresence().setActivity(Activity.watching("Loading teams after restart..."));

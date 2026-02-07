@@ -1,10 +1,13 @@
 {
   "1384191814126272553" : {
     "prediction_channel" : "1467640606300962992",
-    "reminder_channel" : null,
+    "reminder_channel" : "1384191814969589923",
     "prediction_ids" : { },
     "user_data" : { },
-    "developer_mode" : false,
+    "reminder_ids" : {
+      "100-thieves-vs-evil-geniuses-vct-2026-americas-kickoff-lr3" : "1469815343747694634"
+    },
+    "developer_mode" : true,
     "predictions_enabled" : false
   }
 }

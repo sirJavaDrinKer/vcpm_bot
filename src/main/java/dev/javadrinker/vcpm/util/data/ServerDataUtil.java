@@ -166,6 +166,29 @@ public final class ServerDataUtil {
     }
 
     /* =========================
+       ===== REMINDERS ========
+       ========================= */
+
+    public static void setReminderMessage(
+            String serverId,
+            String gameId,
+            String messageId
+    ) {
+        ServerData server = getOrCreateServer(serverId);
+        server.reminder_ids.put(gameId, messageId);
+        save();
+    }
+
+    public static void removeReminder(
+            String serverId,
+            String gameId
+    ) {
+        ServerData server = getOrCreateServer(serverId);
+        server.reminder_ids.remove(gameId);
+        save();
+    }
+
+    /* =========================
        ===== USER DATA =========
        ========================= */
 
@@ -225,6 +248,7 @@ public final class ServerDataUtil {
 
         public Map<String, String> prediction_ids = new HashMap<>();
         public Map<String, UserData> user_data = new HashMap<>();
+        public Map<String, String> reminder_ids = new HashMap<>();
         public boolean developer_mode;
         public boolean predictions_enabled;
     }
