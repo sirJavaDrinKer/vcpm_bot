@@ -1,14 +1,13 @@
 package dev.javadrinker.vcpm.commands;
 
-import dev.javadrinker.vcpm.util.AbbreviationConverter;
-import dev.javadrinker.vcpm.util.MatchUtil;
+import dev.javadrinker.vcpm.util.vlr.AbbreviationConverter;
+import dev.javadrinker.vcpm.util.data.MatchDataUtil;
 import dev.javadrinker.vcpm.util.UnixConversion;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,10 +18,10 @@ public class CheckUpcoming extends ListenerAdapter implements EventListener {
             return;
         }
 
-        List<MatchUtil.UpcomingMatch> upcoming;
+        List<MatchDataUtil.UpcomingMatch> upcoming;
 
         try {
-            upcoming = MatchUtil.getUpcomingMatches(true);
+            upcoming = MatchDataUtil.getUpcomingMatches(true);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -30,7 +29,7 @@ public class CheckUpcoming extends ListenerAdapter implements EventListener {
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
         embedBuilder.setTitle("Upcoming Matches");
-        for(MatchUtil.UpcomingMatch match : upcoming) {
+        for(MatchDataUtil.UpcomingMatch match : upcoming) {
             String team1 = AbbreviationConverter.abbreviate(match.team1);
             String team2 = AbbreviationConverter.abbreviate(match.team2);
 

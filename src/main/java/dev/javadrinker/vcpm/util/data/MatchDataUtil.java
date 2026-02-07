@@ -1,4 +1,4 @@
-package dev.javadrinker.vcpm.util;
+package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class MatchUtil {
+public final class MatchDataUtil {
 
     private static final String UPCOMING_URL =
             "https://vlrggapi.vercel.app/match?q=upcoming";
@@ -33,7 +33,7 @@ public final class MatchUtil {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private MatchUtil() {}
+    private MatchDataUtil() {}
 
     /* =========================
        ===== UPCOMING ==========
@@ -52,7 +52,7 @@ public final class MatchUtil {
         if (!tierOneOnly) return getUpcomingMatches();
 
         return getUpcomingMatches().stream()
-                .filter(MatchUtil::isTierOneEvent)
+                .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
 
@@ -73,7 +73,7 @@ public final class MatchUtil {
         if (!tierOneOnly) return getLiveMatches();
 
         return getLiveMatches().stream()
-                .filter(MatchUtil::isTierOneEvent)
+                .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public final class MatchUtil {
         if (!tierOneOnly) return getPastMatches();
 
         return getPastMatches().stream()
-                .filter(MatchUtil::isTierOneEvent)
+                .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
 

@@ -1,4 +1,4 @@
-package dev.javadrinker.vcpm.util;
+package dev.javadrinker.vcpm.util.vlr;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,16 +1,10 @@
 package dev.javadrinker.vcpm.commands;
 
-import dev.javadrinker.vcpm.util.MatchUtil;
-import dev.javadrinker.vcpm.util.ServerDataUtil;
-import dev.javadrinker.vcpm.util.UnixConversion;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
-import java.io.IOException;
-import java.util.List;
 
 public class TestCommand extends ListenerAdapter implements EventListener {
     @Override

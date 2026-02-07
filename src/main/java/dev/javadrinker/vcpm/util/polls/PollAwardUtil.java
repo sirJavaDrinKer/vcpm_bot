@@ -1,5 +1,6 @@
-package dev.javadrinker.vcpm.util;
+package dev.javadrinker.vcpm.util.polls;
 
+import dev.javadrinker.vcpm.util.data.ServerDataUtil;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;

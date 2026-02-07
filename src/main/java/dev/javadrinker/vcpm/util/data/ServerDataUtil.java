@@ -1,4 +1,4 @@
-package dev.javadrinker.vcpm.util;
+package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,10 +22,6 @@ public final class ServerDataUtil {
     private static Map<String, ServerData> SERVER_DATA;
 
     private ServerDataUtil() {}
-
-    /* =========================
-       ===== INITIALIZATION ====
-       ========================= */
 
     public static void init() {
         if (SERVER_DATA != null) return;
@@ -96,6 +92,38 @@ public final class ServerDataUtil {
         init();
         SERVER_DATA.remove(serverId);
         save();
+    }
+
+    /* =========================
+       ========= OTHER =========
+       ========================= */
+
+    public static void toggleDeveloperMode(String serverId) {
+        System.out.println("toggling dev mode for server: " + serverId);
+        ServerData server = getOrCreateServer(serverId);
+        server.developer_mode = !server.developer_mode;
+        save();
+    }
+
+    public static boolean isDeveloperMode(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        return server.developer_mode;
+    };
+
+    public static void setDeveloperMode(String serverId, boolean mode) {
+        ServerData server = getOrCreateServer(serverId);
+        server.developer_mode = mode;
+        save();
+    }
+
+    public static void setPredictionsEnabled(String serverId, boolean enabled) {
+        ServerData server = getOrCreateServer(serverId);
+        server.predictions_enabled = enabled;
+        save();
+    }
+
+    public static Boolean getPredictionsEnabled(String serverId) {
+        return ServerDataUtil.getOrCreateServer(serverId).predictions_enabled;
     }
 
     /* =========================
@@ -197,6 +225,8 @@ public final class ServerDataUtil {
 
         public Map<String, String> prediction_ids = new HashMap<>();
         public Map<String, UserData> user_data = new HashMap<>();
+        public boolean developer_mode;
+        public boolean predictions_enabled;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

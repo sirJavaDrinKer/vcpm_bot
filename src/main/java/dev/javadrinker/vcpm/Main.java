@@ -1,11 +1,12 @@
 package dev.javadrinker.vcpm;
 
 import dev.javadrinker.vcpm.commands.*;
-import dev.javadrinker.vcpm.commands.text.ArtificialAwardCommand;
-import dev.javadrinker.vcpm.commands.text.TeamByNameCommand;
+import dev.javadrinker.vcpm.commands.text.dev.ArtificialAwardCommand;
+import dev.javadrinker.vcpm.commands.text.dev.DevCommands;
+import dev.javadrinker.vcpm.commands.text.dev.TeamByNameCommand;
 import dev.javadrinker.vcpm.commands.text.TextCommandManager;
 import dev.javadrinker.vcpm.util.Scheduler;
-import dev.javadrinker.vcpm.util.VLRTeamUtil;
+import dev.javadrinker.vcpm.util.data.TeamDataUtil;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -32,9 +33,10 @@ public class Main {
                 .addEventListeners(
                         new CheckUpcoming(),
                         new LeaderboardCommand(),
-                        new SetPredictionChannelCommand(),
+                        new SetChannelCommand(),
                         new FeatureRequestCommand(),
-                        new StatsCommand()
+                        new StatsCommand(),
+                        new DoPredictionsCommand()
                 )
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT,
@@ -56,12 +58,13 @@ public class Main {
 
         textCommandManager.register(new ArtificialAwardCommand());
         textCommandManager.register(new TeamByNameCommand());
+        textCommandManager.register(new DevCommands());
 
         jda.addEventListener(textCommandManager);
 
 
+        TeamDataUtil.loadAllTeamsAsync();
         Scheduler.start(jda);
-        VLRTeamUtil.loadAllTeams();
     }
 
     public static JDA getJDA() {
@@ -98,13 +101,17 @@ public class Main {
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("leaderboard", "leaderboard of top predictors"))
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
-                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("set-prediction-channel", "THIS WILL CLEAR ALL PREDICTIONS!"))
+                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("set-channel", "Set where certain bot messages are sent."))
+                        .addOption(OptionType.STRING, "type", "The type of channel to set. 'reminder' or 'prediction'.", true)
                         .addOption(OptionType.CHANNEL, "channel", "The channel to set predictions to", true)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("feature-request", "Request a feature."))
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("stats", "See your stats."))
                         .addOption(OptionType.USER, "user", "the user to get stats of", false)
+                        .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
+                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("do-predictions", "Enable/disable predictions."))
+                        .addOption(OptionType.BOOLEAN, "enabled", "either disable or enable predictions for this server", true)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
             });
         }

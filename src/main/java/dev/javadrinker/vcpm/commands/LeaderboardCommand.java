@@ -1,16 +1,15 @@
 package dev.javadrinker.vcpm.commands;
 
-import dev.javadrinker.vcpm.util.ServerDataUtil;
+import dev.javadrinker.vcpm.util.StandardMessages;
+import dev.javadrinker.vcpm.util.data.ServerDataUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class LeaderboardCommand extends ListenerAdapter {
 
@@ -65,8 +64,7 @@ public class LeaderboardCommand extends ListenerAdapter {
 
         embed.setDescription(description.toString());
 
-        Random rand = new Random();
-        embed.setFooter("Consider supporting me @ ko-fi.com/javadrinker");
+        embed.setFooter(StandardMessages.randomRegularAdvert());
 
         Member top = guild.retrieveMemberById(sorted.get(0).getKey()).complete();
         embed.setThumbnail(top.getEffectiveAvatarUrl());
