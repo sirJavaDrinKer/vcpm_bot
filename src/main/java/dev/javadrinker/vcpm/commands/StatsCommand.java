@@ -1,6 +1,7 @@
 package dev.javadrinker.vcpm.commands;
 
-import dev.javadrinker.vcpm.util.ServerDataUtil;
+import dev.javadrinker.vcpm.util.StandardMessages;
+import dev.javadrinker.vcpm.util.data.ServerDataUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -57,7 +58,8 @@ public class StatsCommand extends ListenerAdapter {
                 .addField("Total Predictions", String.valueOf(total), true)
                 .addField("Correct vs. Incorrect", correct+" - "+incorrect, true)
                 .addField("Accuracy", user.getAsMention()+" has been right "+Math.round(((float) correct /total)*100)+"% of the time.", false)
-                .setThumbnail(event.getUser().getAvatarUrl());
+                .setThumbnail(user.getAvatarUrl())
+                .setFooter(StandardMessages.randomRegularAdvert());
 
         event.replyEmbeds(embed.build()).setEphemeral(true).queue();
     }

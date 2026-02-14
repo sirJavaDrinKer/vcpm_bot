@@ -1,19 +1,21 @@
-package dev.javadrinker.vcpm.util;
+package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public final class VLRTeamUtil {
+public final class TeamDataUtil {
 
     private static final String BASE_URL =
             "https://vlr.orlandomm.net/api/v1/teams";
@@ -54,79 +56,100 @@ public final class VLRTeamUtil {
     private static final Map<String, TeamSummary> TEAM_NAME_CACHE = new HashMap<>();
     private static final Map<String, TeamSummary> TEAM_ID_CACHE = new HashMap<>();
 
+    private static final Path CACHE_FILE =
+            Path.of("data","cached_teams.json");
+
+    private static volatile boolean LOADING = false;
     private static boolean LOADED = false;
 
-    private VLRTeamUtil() {}
+    private TeamDataUtil() {}
 
     /* ============================
        ===== PUBLIC API ===========
        ============================ */
 
     /** Loads all teams (paginated) once */
-    public static synchronized void loadAllTeams()
-            throws IOException, InterruptedException {
+    public static synchronized CompletableFuture<Void> loadAllTeamsAsync() {
 
-        if (LOADED) return;
+        if (LOADING) {
+            return CompletableFuture.completedFuture(null);
+        }
 
-        for (String region : regions) {
+        // Load cached data immediately
+        if (!LOADED) {
+            loadFromDisk();
+        }
 
-            int page = 0;
-            boolean hasNext = true;
+        LOADING = true;
 
-            System.out.println("Loading teams for region: " + region);
+        return CompletableFuture.runAsync(() -> {
+            try {
+                TEAM_ID_CACHE.clear();
+                TEAM_NAME_CACHE.clear();
 
-            while (hasNext) {
-                ApiListResponse response = fetchPage(page, region);
+                for (String region : regions) {
 
-                if (response.data != null) {
-                    for (TeamSummary team : response.data) {
-                        TEAM_ID_CACHE.put(team.id, team);
-                        TEAM_NAME_CACHE.put(normalize(team.name), team);
+                    int page = 0;
+                    boolean hasNext = true;
+
+                    System.out.println("Refreshing teams for region: " + region);
+
+                    while (hasNext) {
+                        ApiListResponse response = fetchPage(page, region);
+
+                        if (response.data != null) {
+                            for (TeamSummary team : response.data) {
+                                TEAM_ID_CACHE.put(team.id, team);
+                                TEAM_NAME_CACHE.put(
+                                        normalize(team.name), team
+                                );
+                            }
+                        }
+
+                        hasNext = response.pagination != null
+                                && response.pagination.hasNextPage;
+
+                        page++;
                     }
                 }
 
-                hasNext = response.pagination != null
-                        && response.pagination.hasNextPage;
+                LOADED = true;
+                writeToDisk();
 
-                System.out.println(
-                        "Paginating teams | region=" + region +
-                                " page=" + page +
-                                " next=" + hasNext
-                );
-
-                page++;
+            } catch (Exception e) {
+                System.err.println("Team refresh failed: " + e.getMessage());
+            } finally {
+                LOADING = false;
             }
-        }
-
-        LOADED = true;
+        });
     }
 
-
-    /** Find a team by full name */
-    public static TeamSummary getTeamByName(String name)
-            throws IOException, InterruptedException {
-
-        loadAllTeams();
+    public static TeamSummary getTeamByName(String name) {
+        if (!LOADED) loadFromDisk();
         return TEAM_NAME_CACHE.get(normalize(name));
     }
 
-    /** Find a team by ID */
-    public static TeamSummary getTeamById(String id)
-            throws IOException, InterruptedException {
-
-        loadAllTeams();
+    public static TeamSummary getTeamById(String id) {
+        if (!LOADED) loadFromDisk();
         return TEAM_ID_CACHE.get(id);
     }
 
-    /** Returns all teams */
-    public static List<TeamSummary> getAllTeams()
-            throws IOException, InterruptedException {
-
-        loadAllTeams();
+    public static List<TeamSummary> getAllTeams() {
+        if (!LOADED) loadFromDisk();
         return TEAM_ID_CACHE.values()
                 .stream()
                 .sorted(Comparator.comparing(t -> t.name))
                 .collect(Collectors.toList());
+    }
+
+    public static Boolean isFileCacheEmpty() {
+        if (!Files.exists(CACHE_FILE)) {
+            return true;
+        }
+        if (TEAM_ID_CACHE.isEmpty()) {
+            return true;
+        }
+        return !LOADED;
     }
 
     /** Fetch detailed info for a single team */
@@ -153,6 +176,49 @@ public final class VLRTeamUtil {
     /* ============================
        ===== INTERNAL ============
        ============================ */
+
+    private static void loadFromDisk() {
+        if (!Files.exists(CACHE_FILE)) return;
+
+        try {
+            List<TeamSummary> teams = Arrays.asList(
+                    MAPPER.readValue(
+                            Files.readString(CACHE_FILE),
+                            TeamSummary[].class
+                    )
+            );
+
+            for (TeamSummary team : teams) {
+                TEAM_ID_CACHE.put(team.id, team);
+                TEAM_NAME_CACHE.put(normalize(team.name), team);
+            }
+
+            LOADED = true;
+            System.out.println("Loaded teams from cached_teams.json");
+
+        } catch (IOException e) {
+            System.err.println("Failed to load cached teams: " + e.getMessage());
+        }
+    }
+
+    private static void writeToDisk() {
+        try {
+            List<TeamSummary> teams =
+                    new ArrayList<>(TEAM_ID_CACHE.values());
+
+            Files.writeString(
+                    CACHE_FILE,
+                    MAPPER.writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(teams)
+            );
+
+            System.out.println("Wrote cached_teams.json");
+
+        } catch (IOException e) {
+            System.err.println("Failed to write cached teams: " + e.getMessage());
+        }
+    }
+
 
     private static ApiListResponse fetchPage(int page, String region)
             throws IOException, InterruptedException {

@@ -1,11 +1,11 @@
-package dev.javadrinker.vcpm.commands.text;
+package dev.javadrinker.vcpm.commands.text.dev;
 
-import dev.javadrinker.vcpm.util.PollAwardUtil;
-import dev.javadrinker.vcpm.util.VLRTeamUtil;
+import dev.javadrinker.vcpm.commands.text.TextCommand;
+import dev.javadrinker.vcpm.commands.text.TextCommandContext;
+import dev.javadrinker.vcpm.util.data.TeamDataUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.messages.MessagePoll;
 
 import java.io.IOException;
 import java.util.Set;
@@ -30,6 +30,9 @@ public class TeamByNameCommand extends TextCommand {
 
     @Override
     public void execute(TextCommandContext ctx) throws IOException, InterruptedException {
+        if (!DevCommands.getDevMode(ctx.guild)) {
+            return;
+        }
 
         Message commandMessage = ctx.message;
 
@@ -39,7 +42,7 @@ public class TeamByNameCommand extends TextCommand {
             return;
         }
 
-        VLRTeamUtil.TeamSummary team = VLRTeamUtil.getTeamByName(answerText);
+        TeamDataUtil.TeamSummary team = TeamDataUtil.getTeamByName(answerText);
         boolean valid = team != null;
 
         if (!valid) {

@@ -46,3 +46,7 @@ bin/
 .env
 .env.local
 .env.*.local
+
+### Data ###
+data/cached_teams.json
+data/server_data.json

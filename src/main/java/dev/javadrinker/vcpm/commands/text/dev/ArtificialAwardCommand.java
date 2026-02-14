@@ -1,8 +1,8 @@
-package dev.javadrinker.vcpm.commands.text;
+package dev.javadrinker.vcpm.commands.text.dev;
 
 import dev.javadrinker.vcpm.commands.text.TextCommand;
 import dev.javadrinker.vcpm.commands.text.TextCommandContext;
-import dev.javadrinker.vcpm.util.PollAwardUtil;
+import dev.javadrinker.vcpm.util.polls.PollAwardUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -30,6 +30,9 @@ public class ArtificialAwardCommand extends TextCommand {
 
     @Override
     public void execute(TextCommandContext ctx) {
+        if (!DevCommands.getDevMode(ctx.guild)) {
+            return;
+        }
 
         Message commandMessage = ctx.message;
 

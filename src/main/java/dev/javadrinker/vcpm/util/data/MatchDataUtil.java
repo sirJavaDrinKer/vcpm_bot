@@ -1,4 +1,4 @@
-package dev.javadrinker.vcpm.util;
+package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class MatchUtil {
+public final class MatchDataUtil {
 
     private static final String UPCOMING_URL =
             "https://vlrggapi.vercel.app/match?q=upcoming";
@@ -31,9 +31,18 @@ public final class MatchUtil {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
+    private static List<LiveMatch> cachedLiveMatches;
+    private static long lastLiveFetchUnix;
+
+    private static List<UpcomingMatch> cachedUpcomingMatches;
+    private static long lastUpcomingFetchUnix;
+
+    private static List<PastMatch> cachedPastMatches;
+    private static long lastPastFetchUnix;
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private MatchUtil() {}
+    private MatchDataUtil() {}
 
     /* =========================
        ===== UPCOMING ==========
@@ -42,6 +51,23 @@ public final class MatchUtil {
     public static List<UpcomingMatch> getUpcomingMatches()
             throws IOException, InterruptedException {
 
+        if (cachedUpcomingMatches == null) {
+            cachedUpcomingMatches = fetch(UPCOMING_URL, UpcomingMatch.class)
+                .data.segments;
+
+            lastUpcomingFetchUnix = System.currentTimeMillis();
+
+            System.out.println("Fetched upcoming matches for the first time, caching for 1 minute.");
+
+            return cachedUpcomingMatches;
+        }
+
+        if (System.currentTimeMillis() - lastUpcomingFetchUnix < 1000*60*10) {
+            System.out.println("Using cached upcoming matches.");
+            return cachedUpcomingMatches;
+        }
+
+        lastUpcomingFetchUnix = System.currentTimeMillis();
         return fetch(UPCOMING_URL, UpcomingMatch.class)
                 .data.segments;
     }
@@ -52,7 +78,7 @@ public final class MatchUtil {
         if (!tierOneOnly) return getUpcomingMatches();
 
         return getUpcomingMatches().stream()
-                .filter(MatchUtil::isTierOneEvent)
+                .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
 
@@ -73,7 +99,7 @@ public final class MatchUtil {
         if (!tierOneOnly) return getLiveMatches();
 
         return getLiveMatches().stream()
-                .filter(MatchUtil::isTierOneEvent)
+                .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +128,7 @@ public final class MatchUtil {
         if (!tierOneOnly) return getPastMatches();
 
         return getPastMatches().stream()
-                .filter(MatchUtil::isTierOneEvent)
+                .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
 
