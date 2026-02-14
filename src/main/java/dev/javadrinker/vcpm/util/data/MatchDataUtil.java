@@ -31,14 +31,6 @@ public final class MatchDataUtil {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-    private static List<LiveMatch> cachedLiveMatches;
-    private static long lastLiveFetchUnix;
-
-    private static List<UpcomingMatch> cachedUpcomingMatches;
-    private static long lastUpcomingFetchUnix;
-
-    private static List<PastMatch> cachedPastMatches;
-    private static long lastPastFetchUnix;
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -50,24 +42,7 @@ public final class MatchDataUtil {
 
     public static List<UpcomingMatch> getUpcomingMatches()
             throws IOException, InterruptedException {
-
-        if (cachedUpcomingMatches == null) {
-            cachedUpcomingMatches = fetch(UPCOMING_URL, UpcomingMatch.class)
-                .data.segments;
-
-            lastUpcomingFetchUnix = System.currentTimeMillis();
-
-            System.out.println("Fetched upcoming matches for the first time, caching for 1 minute.");
-
-            return cachedUpcomingMatches;
-        }
-
-        if (System.currentTimeMillis() - lastUpcomingFetchUnix < 1000*60*10) {
-            System.out.println("Using cached upcoming matches.");
-            return cachedUpcomingMatches;
-        }
-
-        lastUpcomingFetchUnix = System.currentTimeMillis();
+        
         return fetch(UPCOMING_URL, UpcomingMatch.class)
                 .data.segments;
     }
