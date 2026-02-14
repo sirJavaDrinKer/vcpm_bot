@@ -50,3 +50,5 @@ bin/
 ### Data ###
 data/cached_teams.json
 data/server_data.json
+data/server_data.json
+data/cached_teams.json

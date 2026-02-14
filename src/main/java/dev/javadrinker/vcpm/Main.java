@@ -26,6 +26,8 @@ public class Main {
     private static final String token = config.get("TOKEN");
     private static JDA jda;
 
+    private static long startTime;
+
     public static void main(String[] args) throws Exception {
 
         JDABuilder builder = JDABuilder.createDefault(token);
@@ -36,7 +38,8 @@ public class Main {
                         new SetChannelCommand(),
                         new FeatureRequestCommand(),
                         new StatsCommand(),
-                        new DoPredictionsCommand()
+                        new DoPredictionsCommand(),
+                        new BotInformationCommand()
                 )
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT,
@@ -51,6 +54,7 @@ public class Main {
                 .build()
                 .awaitReady();
 
+        startTime = System.currentTimeMillis();
 
         upsertCommands();
 
@@ -72,7 +76,10 @@ public class Main {
     }
 
     public static String getVersion() {
-        return getConfig.get("VERSION");
+        return getConfig.get("v"+Main.class.getPackage().getImplementationVersion());
+    }
+    public static long startTime() {
+        return startTime;
     }
 
     public static void upsertCommands() {
@@ -112,6 +119,8 @@ public class Main {
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("do-predictions", "Enable/disable predictions."))
                         .addOption(OptionType.BOOLEAN, "enabled", "either disable or enable predictions for this server", true)
+                        .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
+                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("bot-information", "Get information about the bot."))
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
             });
         }

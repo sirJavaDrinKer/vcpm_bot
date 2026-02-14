@@ -19,6 +19,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 }
 
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
