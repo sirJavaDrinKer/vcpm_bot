@@ -25,7 +25,7 @@ public final class MatchDataUtil {
             "https://vlrggapi.vercel.app/match?q=results";
 
     private static final Set<String> TIER_ONE_KEYWORDS =
-            Set.of("VCT", "Masters", "Champions");
+            Set.of("VCT", "MASTERS", "CHAMPIONS", "CLASH");
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
@@ -50,9 +50,11 @@ public final class MatchDataUtil {
     public static List<UpcomingMatch> getUpcomingMatches(boolean tierOneOnly)
             throws IOException, InterruptedException {
 
-        if (!tierOneOnly) return getUpcomingMatches();
+        List<UpcomingMatch> matches = getUpcomingMatches();
 
-        return getUpcomingMatches().stream()
+        if (!tierOneOnly) return matches;
+
+        return matches.stream()
                 .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
@@ -71,9 +73,11 @@ public final class MatchDataUtil {
     public static List<LiveMatch> getLiveMatches(boolean tierOneOnly)
             throws IOException, InterruptedException {
 
-        if (!tierOneOnly) return getLiveMatches();
+        List<LiveMatch> matches = getLiveMatches();
 
-        return getLiveMatches().stream()
+        if (!tierOneOnly) return matches;
+
+        return matches.stream()
                 .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }
@@ -100,9 +104,11 @@ public final class MatchDataUtil {
     public static List<PastMatch> getPastMatches(boolean tierOneOnly)
             throws IOException, InterruptedException {
 
-        if (!tierOneOnly) return getPastMatches();
+        List<PastMatch> matches = getPastMatches();
 
-        return getPastMatches().stream()
+        if (!tierOneOnly) return matches;
+
+        return matches.stream()
                 .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
     }

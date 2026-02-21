@@ -45,7 +45,7 @@ public class Scheduler {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0, 2, TimeUnit.MINUTES);
+        }, 0, 120, TimeUnit.SECONDS);
     }
 
     private static void updateStatus(JDA jda) {
