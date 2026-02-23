@@ -39,31 +39,29 @@ public class BotInformationCommand extends ListenerAdapter implements EventListe
         embedBuilder.setFooter("@javadrinker · "+ StandardMessages.randomRegularAdvert());
         embedBuilder.addField("Commands",
             "`/upcoming`\n" +
-            "`/do-predictions`\n" +
+            "`/toggle-feature`\n" +
             "`/leaderboard`\n" +
             "`/stats`\n" +
             "`/set-channel`\n" +
             "`/feature-request`\n" +
-            "`bot-information`",
+            "`/bot-information`",
         true);
 
         embedBuilder.addField("Functions",
             "`:` Get upcoming matches (within 24h)\n" +
-            "`:` Toggle predictions.\n" +
+            "`:` Toggle a certain feature.\n" +
             "`:` View the top predictors.\n" +
             "`:` View your or other's stats.\n" +
-            "`:` Set predict/remind channel.\n" +
+            "`:` Set predict/remind/news channel.\n" +
             "`:` Request features, report bugs.\n" +
             "`:` Look at bot info.",
         true);
 
-        embedBuilder.addField("Version & Notes", "v2.0.0 Notable additions are as follows:\n" +
-                "- Reorganized packages and utilities to clarify responsibility.\n" +
-                "- Added `cached_teams.json`, allowing team information to be accessed while starting API calls are being made.\n" +
-                "- Poll reminder and match reminder behavior now implemented, match reminders can now be set to be sent in a specified channel.\n" +
-                "- Leaderboard command now supports multiple pages of users." +
-                "- Changed scheduler (heartbeat) to 2 minutes to prevent API stress and to reduce chances of timeouts." +
-                "- Began caching upcoming matches to allow them to always be accessed.", false);
+        embedBuilder.addField("Version & Notes", "v2.1.0 Notable additions are as follows:\n" +
+                "- Changed `/do-predictions` to `/toggle-features`, now allowing toggling predictions, news, and reminders.\n" +
+                "- Added `news` option to `/set-channel`." +
+                "- Added news feature that scans VLR articles and posts summaries to specified channels." +
+                "- Removed backend code for multiple unused commands that will not be implemented.", false);
 
         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 

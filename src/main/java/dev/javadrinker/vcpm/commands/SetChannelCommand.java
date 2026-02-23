@@ -35,7 +35,6 @@ public class SetChannelCommand extends ListenerAdapter {
                 ServerDataUtil.getOrCreateServer(guildId);
 
         switch (type) {
-
             case "prediction" -> {
                 String oldChannel = serverData.prediction_channel;
 
@@ -52,6 +51,14 @@ public class SetChannelCommand extends ListenerAdapter {
                 ).queue();
             }
 
+            case "news" -> {
+                ServerDataUtil.setNewsChannel(guildId, channel.getId());
+
+                event.reply(
+                        "News channel set to: " + channel.getAsMention()
+                ).queue();
+            }
+
             case "reminder" -> {
                 ServerDataUtil.setReminderChannel(guildId, channel.getId());
 
@@ -61,7 +68,7 @@ public class SetChannelCommand extends ListenerAdapter {
             }
 
             default -> {
-                event.reply("Invalid type. Use `prediction` or `reminder`.")
+                event.reply("Invalid type. Use `prediction`, `news`, or `reminder`.")
                         .setEphemeral(true)
                         .queue();
             }

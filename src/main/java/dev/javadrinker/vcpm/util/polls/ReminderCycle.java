@@ -13,6 +13,8 @@ import java.util.List;
 
 public class ReminderCycle {
     public static void sendNewReminders(Guild guild) {
+        if (!ServerDataUtil.getNewsEnabled(guild.getId())) { return; }
+
         List<MatchDataUtil.LiveMatch> live;
         try {
             live = MatchDataUtil.getLiveMatches(true);
@@ -49,6 +51,8 @@ public class ReminderCycle {
         }
     }
     public static void removeOldReminders(Guild guild){
+        if (!ServerDataUtil.getNewsEnabled(guild.getId())) { return; }
+
         List<MatchDataUtil.PastMatch> past;
         try {
             past = MatchDataUtil.getPastMatches(true);

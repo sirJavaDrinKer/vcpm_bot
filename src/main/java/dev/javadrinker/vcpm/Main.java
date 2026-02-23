@@ -3,6 +3,7 @@ package dev.javadrinker.vcpm;
 import dev.javadrinker.vcpm.commands.*;
 import dev.javadrinker.vcpm.commands.text.dev.ArtificialAwardCommand;
 import dev.javadrinker.vcpm.commands.text.dev.DevCommands;
+import dev.javadrinker.vcpm.commands.text.dev.ForceNewsCycleCommand;
 import dev.javadrinker.vcpm.commands.text.dev.TeamByNameCommand;
 import dev.javadrinker.vcpm.commands.text.TextCommandManager;
 import dev.javadrinker.vcpm.util.Scheduler;
@@ -38,7 +39,7 @@ public class Main {
                         new SetChannelCommand(),
                         new FeatureRequestCommand(),
                         new StatsCommand(),
-                        new DoPredictionsCommand(),
+                        new ToggleFeatureCommand(),
                         new BotInformationCommand()
                 )
                 .enableIntents(
@@ -63,6 +64,7 @@ public class Main {
         textCommandManager.register(new ArtificialAwardCommand());
         textCommandManager.register(new TeamByNameCommand());
         textCommandManager.register(new DevCommands());
+        textCommandManager.register(new ForceNewsCycleCommand());
 
         jda.addEventListener(textCommandManager);
 
@@ -109,7 +111,7 @@ public class Main {
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("leaderboard", "leaderboard of top predictors"))
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("set-channel", "Set where certain bot messages are sent."))
-                        .addOption(OptionType.STRING, "type", "The type of channel to set. 'reminder' or 'prediction'.", true)
+                        .addOption(OptionType.STRING, "type", "The type of channel to set. 'news', 'reminder' or 'prediction'.", true)
                         .addOption(OptionType.CHANNEL, "channel", "The channel to set predictions to", true)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("feature-request", "Request a feature."))
@@ -117,7 +119,8 @@ public class Main {
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("stats", "See your stats."))
                         .addOption(OptionType.USER, "user", "the user to get stats of", false)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
-                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("do-predictions", "Enable/disable predictions."))
+                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("toggle-features", "Enable/disable predictions."))
+                        .addOption(OptionType.STRING, "feature", "the feature to enable or disable. 'news', 'reminder' or 'prediction'.", true)
                         .addOption(OptionType.BOOLEAN, "enabled", "either disable or enable predictions for this server", true)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("bot-information", "Get information about the bot."))

@@ -142,6 +142,33 @@ public final class ServerDataUtil {
         save();
     }
 
+    public static void setNewsChannel(String serverId, String channelId) {
+        ServerData server = getOrCreateServer(serverId);
+        server.news_channel = channelId;
+        save();
+    }
+
+    /* =========================
+       ===== NEWS ==============
+       ========================= */
+
+    public static void setLatestNewsId(String serverId, String newsId) {
+        ServerData server = getOrCreateServer(serverId);
+        server.latest_news_id = newsId;
+        save();
+    }
+
+    public static void setNewsEnabled(String serverId, boolean enabled) {
+        ServerData server = getOrCreateServer(serverId);
+        server.news_enabled = enabled;
+        save();
+    }
+
+    public static boolean getNewsEnabled(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        return server.news_enabled;
+    }
+
     /* =========================
        ===== PREDICTIONS =======
        ========================= */
@@ -186,6 +213,17 @@ public final class ServerDataUtil {
         ServerData server = getOrCreateServer(serverId);
         server.reminder_ids.remove(gameId);
         save();
+    }
+
+    public static void setRemindersEnabled(String serverId, boolean enabled) {
+        ServerData server = getOrCreateServer(serverId);
+        server.reminders_enabled = enabled;
+        save();
+    }
+
+    public static boolean getRemindersEnabled(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        return server.reminders_enabled;
     }
 
     /* =========================
@@ -245,12 +283,16 @@ public final class ServerDataUtil {
     public static class ServerData {
         public String prediction_channel;
         public String reminder_channel;
+        public String news_channel;
 
         public Map<String, String> prediction_ids = new HashMap<>();
         public Map<String, UserData> user_data = new HashMap<>();
         public Map<String, String> reminder_ids = new HashMap<>();
         public boolean developer_mode;
         public boolean predictions_enabled;
+        public boolean reminders_enabled;
+        public boolean news_enabled;
+        public String latest_news_id;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
