@@ -5,7 +5,7 @@ plugins {
 
 application.mainClass = "dev.javadrinker.vcpm.Main" //
 group = "dev.javadrinker.vcpm"
-version = "2.1.0"
+version = "2.1.1"
 
 val jdaVersion = "6.3.0" //
 
