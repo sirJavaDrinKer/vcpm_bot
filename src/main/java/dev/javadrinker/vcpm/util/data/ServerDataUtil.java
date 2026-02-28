@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class ServerDataUtil {
@@ -169,6 +171,17 @@ public final class ServerDataUtil {
         return server.news_enabled;
     }
 
+    public static List<String> getNewsIds(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        return server.news_ids;
+    }
+
+    public static void setNewsIds(String serverId, List<String> newsIds) {
+        ServerData server = getOrCreateServer(serverId);
+        server.news_ids = newsIds;
+        save();
+    }
+
     /* =========================
        ===== PREDICTIONS =======
        ========================= */
@@ -293,6 +306,8 @@ public final class ServerDataUtil {
         public boolean reminders_enabled;
         public boolean news_enabled;
         public String latest_news_id;
+
+        public List<String> news_ids = new ArrayList<>();
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

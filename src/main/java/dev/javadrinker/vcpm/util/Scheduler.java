@@ -35,7 +35,7 @@ public class Scheduler {
                             checkForPastGames(guild);
                         }
 
-                        NewsCycle.checkPostLatestArticle(guild);
+                        NewsCycle.compareAndCleanArticleLists(guild);
                         ReminderCycle.sendNewReminders(guild);
                         ReminderCycle.removeOldReminders(guild);
 

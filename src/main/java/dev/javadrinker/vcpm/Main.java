@@ -1,11 +1,9 @@
 package dev.javadrinker.vcpm;
 
 import dev.javadrinker.vcpm.commands.*;
-import dev.javadrinker.vcpm.commands.text.dev.ArtificialAwardCommand;
-import dev.javadrinker.vcpm.commands.text.dev.DevCommands;
-import dev.javadrinker.vcpm.commands.text.dev.ForceNewsCycleCommand;
-import dev.javadrinker.vcpm.commands.text.dev.TeamByNameCommand;
+import dev.javadrinker.vcpm.commands.text.dev.*;
 import dev.javadrinker.vcpm.commands.text.TextCommandManager;
+import dev.javadrinker.vcpm.commands.text.dev.CoinFlipTextCommand;
 import dev.javadrinker.vcpm.util.Scheduler;
 import dev.javadrinker.vcpm.util.data.TeamDataUtil;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -65,6 +63,7 @@ public class Main {
         textCommandManager.register(new TeamByNameCommand());
         textCommandManager.register(new DevCommands());
         textCommandManager.register(new ForceNewsCycleCommand());
+        textCommandManager.register(new CoinFlipTextCommand());
 
         jda.addEventListener(textCommandManager);
 
