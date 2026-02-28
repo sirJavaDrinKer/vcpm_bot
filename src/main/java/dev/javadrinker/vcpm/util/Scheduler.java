@@ -1,6 +1,7 @@
 package dev.javadrinker.vcpm.util;
 
 import dev.javadrinker.vcpm.util.data.ServerDataUtil;
+import dev.javadrinker.vcpm.util.polls.NewsCycle;
 import dev.javadrinker.vcpm.util.polls.ReminderCycle;
 import dev.javadrinker.vcpm.util.vlr.AbbreviationConverter;
 import dev.javadrinker.vcpm.util.data.MatchDataUtil;
@@ -34,6 +35,7 @@ public class Scheduler {
                             checkForPastGames(guild);
                         }
 
+                        NewsCycle.compareAndCleanArticleLists(guild);
                         ReminderCycle.sendNewReminders(guild);
                         ReminderCycle.removeOldReminders(guild);
 
@@ -45,7 +47,7 @@ public class Scheduler {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0, 120, TimeUnit.SECONDS);
+        }, 15, 120, TimeUnit.SECONDS);
     }
 
     private static void updateStatus(JDA jda) {
