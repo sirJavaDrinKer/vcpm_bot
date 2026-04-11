@@ -38,7 +38,13 @@ public class NewsCycle {
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(article.title);
-        eb.setDescription("\""+article.description+"\"");
+
+        if (article.description.isEmpty()) {
+            eb.setDescription("*No summary provided.*");
+        } else {
+            eb.setDescription("\""+article.description+"\"");
+        }
+
         eb.setUrl(article.url_path);
         eb.setFooter(article.author+" - "+article.date);
 
