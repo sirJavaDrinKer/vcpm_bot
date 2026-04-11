@@ -57,12 +57,8 @@ public class BotInformationCommand extends ListenerAdapter implements EventListe
             "`:` Look at bot info.",
         true);
 
-        embedBuilder.addField("Version & Notes", "v2.1.1 Notable additions are as follows:\n" +
-                "- Changed `/do-predictions` to `/toggle-features`, now allowing toggling predictions, news, and reminders.\n" +
-                "- Added `news` option to `/set-channel`." +
-                "- Added news feature that scans VLR articles and posts summaries to specified channels." +
-                "- Removed backend code for multiple unused commands that will not be implemented." +
-                "- News now posts all api-reachable articles.", false);
+        embedBuilder.addField("Version & Notes", "v2.1.2 Notable additions are as follows:\n" +
+                "- Changed API from the creator's public API to a self-hosted version of the API.",false);
 
         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 

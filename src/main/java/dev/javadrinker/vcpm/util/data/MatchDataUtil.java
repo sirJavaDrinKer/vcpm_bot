@@ -2,6 +2,8 @@ package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.javadrinker.vcpm.Main;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,14 +17,16 @@ import java.util.stream.Collectors;
 
 public final class MatchDataUtil {
 
+    Dotenv dotenv = Dotenv.load();
+
     private static final String UPCOMING_URL =
-            "https://vlrggapi.vercel.app/match?q=upcoming";
+            Main.VLRAPI_SELF+"match?q=upcoming";
 
     private static final String LIVE_URL =
-            "https://vlrggapi.vercel.app/match?q=live_score";
+            Main.VLRAPI_SELF+"match?q=live_score";
 
     private static final String RESULTS_URL =
-            "https://vlrggapi.vercel.app/match?q=results";
+            Main.VLRAPI_SELF+"match?q=results";
 
     private static final Set<String> TIER_ONE_KEYWORDS =
             Set.of("VCT", "MASTERS", "CHAMPIONS", "CLASH");

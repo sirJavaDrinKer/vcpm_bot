@@ -25,6 +25,8 @@ public class Main {
     private static final String token = config.get("TOKEN");
     private static JDA jda;
 
+    public static final String VLRAPI_SELF = config.get("VLRAPI_SELF");
+
     private static long startTime;
 
     public static void main(String[] args) throws Exception {
