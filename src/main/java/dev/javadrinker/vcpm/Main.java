@@ -6,6 +6,7 @@ import dev.javadrinker.vcpm.commands.text.TextCommandManager;
 import dev.javadrinker.vcpm.commands.text.dev.CoinFlipTextCommand;
 import dev.javadrinker.vcpm.util.Scheduler;
 import dev.javadrinker.vcpm.util.data.TeamDataUtil;
+import dev.javadrinker.vcpm.util.polls.NewsCycle;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -40,7 +41,9 @@ public class Main {
                         new FeatureRequestCommand(),
                         new StatsCommand(),
                         new ToggleFeatureCommand(),
-                        new BotInformationCommand()
+                        new BotInformationCommand(),
+                        new NewsCycle(),
+                        new ResetLeaderboard()
                 )
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT,
@@ -95,10 +98,10 @@ public class Main {
                 System.out.println("Clearing existing commands for guild [" + guild.getId() + "].");
                 AtomicInteger waitlist = new AtomicInteger(existingCommands.size());
                 for (var command : existingCommands) {
-                    guild.deleteCommandById(command.getId()).queue(cmd -> {
+                    /*guild.deleteCommandById(command.getId()).queue(cmd -> {
                         System.out.println("Deleted command [" + command.getName() + "] for guild [" + guild.getId() + "].");
                         waitlist.addAndGet(-1);
-                    });
+                    });*/
                 }
 
                 while (waitlist.get() > 0) {
@@ -108,6 +111,8 @@ public class Main {
                 System.out.println("Loading upserting commands for guild [" + guild.getId() + "].");
 
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("upcoming", "Replies with upcoming t1 matches"))
+                        .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
+                Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("reset-leaderboard", "Resets the leaderboard."))
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("leaderboard", "leaderboard of top predictors"))
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);

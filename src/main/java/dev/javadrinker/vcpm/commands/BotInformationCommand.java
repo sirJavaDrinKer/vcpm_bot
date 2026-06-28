@@ -57,8 +57,9 @@ public class BotInformationCommand extends ListenerAdapter implements EventListe
             "`:` Look at bot info.",
         true);
 
-        embedBuilder.addField("Version & Notes", "v2.1.2 Notable additions are as follows:\n" +
-                "- Changed API from the creator's public API to a self-hosted version of the API.",false);
+        embedBuilder.addField("Version & Notes", "v2.2 Notable additions are as follows:\n" +
+                "- Significant overhauls to the news-cycle system.\n" +
+                "- Added manual player data reset.",false);
 
         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 
