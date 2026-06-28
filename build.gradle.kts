@@ -5,7 +5,7 @@ plugins {
 
 application.mainClass = "dev.javadrinker.vcpm.Main" //
 group = "dev.javadrinker.vcpm"
-version = "2.1.1"
+version = "2.1.2"
 
 val jdaVersion = "6.3.0" //
 
@@ -17,6 +17,7 @@ dependencies {
     implementation("net.dv8tion:JDA:$jdaVersion")
     implementation("io.github.cdimascio:java-dotenv:5.2.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation ("org.jsoup:jsoup:1.22.2")
 }
 
 

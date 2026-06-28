@@ -2,6 +2,8 @@ package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.javadrinker.vcpm.Main;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,23 +11,26 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class MatchDataUtil {
 
+    Dotenv dotenv = Dotenv.load();
+
     private static final String UPCOMING_URL =
-            "https://vlrggapi.vercel.app/match?q=upcoming";
+            Main.VLRAPI_SELF+"match?q=upcoming";
 
     private static final String LIVE_URL =
-            "https://vlrggapi.vercel.app/match?q=live_score";
+            Main.VLRAPI_SELF+"match?q=live_score";
 
     private static final String RESULTS_URL =
-            "https://vlrggapi.vercel.app/match?q=results";
+            Main.VLRAPI_SELF+"match?q=results";
 
     private static final Set<String> TIER_ONE_KEYWORDS =
-            Set.of("VCT", "MASTERS", "CHAMPIONS", "CLASH");
+            Set.of("VCT");
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
@@ -57,6 +62,18 @@ public final class MatchDataUtil {
         return matches.stream()
                 .filter(MatchDataUtil::isTierOneEvent)
                 .collect(Collectors.toList());
+    }
+
+    // TODO: Allow server administrators to select keywords that they wish to use for matches.
+    public static List<UpcomingMatch> getUpcomingMatches(String[] keywords)
+            throws IOException, InterruptedException {
+
+        List<UpcomingMatch> matches = getUpcomingMatches();
+
+        return matches.stream()
+                .filter(match -> MatchDataUtil.containsKeywords(match, keywords))
+                .collect(Collectors.toList());
+
     }
 
     /* =========================
@@ -146,6 +163,20 @@ public final class MatchDataUtil {
 
         event = event.toUpperCase();
         return TIER_ONE_KEYWORDS.stream().anyMatch(event::contains);
+    }
+
+    public static boolean containsKeywords(UpcomingMatch match, String[] keywords) {
+        if (keywords == null || keywords.length == 0) return true;
+
+        String event = match.getEventName();
+        if (event == null) return false;
+
+        // Normalize to uppercase for case-insensitive matching
+        String upperEvent = event.toUpperCase();
+
+        return Arrays.stream(keywords)
+                .map(String::toUpperCase)
+                .anyMatch(upperEvent::contains);
     }
 
     /* =========================

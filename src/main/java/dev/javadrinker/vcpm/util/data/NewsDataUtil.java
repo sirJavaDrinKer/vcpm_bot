@@ -2,6 +2,7 @@ package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.javadrinker.vcpm.Main;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class NewsDataUtil {
     private static final String NEWS_URL =
-            "https://vlrggapi.vercel.app/v2/news";
+            Main.VLRAPI_SELF+"v2/news";
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
