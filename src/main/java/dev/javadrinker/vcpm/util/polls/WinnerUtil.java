@@ -20,6 +20,12 @@ public class WinnerUtil {
 
     protected static String getWinnerFlag(MatchDataUtil.PastMatch match) throws IOException, InterruptedException {
         String team1 = match.team1;
+        if (TeamDataUtil.getTeamByName(match.team1)==null || TeamDataUtil.getTeamByName(match.team2)==null) {
+            return "https://placehold.co/500x500.png?text=?";
+        }
+        if (getWinnerTeam(match)==null) {
+            return "https://placehold.co/500x500.png?text=?";
+        }
         if (getWinnerTeam(match).equals(team1)) {
             return TeamDataUtil.getTeamByName(match.team1).img;
         } else {

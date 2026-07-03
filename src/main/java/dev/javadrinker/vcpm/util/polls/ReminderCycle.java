@@ -39,6 +39,10 @@ public class ReminderCycle {
                 continue;
             }
 
+            if (match.team1.equals("TBD") || match.team2.equals("TBD")) {
+                continue;
+            }
+
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle(AbbreviationConverter.abbreviate(match.team1) + " vs " + AbbreviationConverter.abbreviate(match.team2));
             embedBuilder.setDescription(match.team1 +" vs "+match.team2+ " is now live, tune in!");

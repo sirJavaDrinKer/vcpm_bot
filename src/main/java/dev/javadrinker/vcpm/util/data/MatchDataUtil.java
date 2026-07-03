@@ -30,7 +30,7 @@ public final class MatchDataUtil {
             Main.VLRAPI_SELF+"match?q=results";
 
     private static final Set<String> TIER_ONE_KEYWORDS =
-            Set.of("VCT");
+            Set.of("VALORANT CHAMPIONS TOUR", "ESPORTS NATIONS CUP", "ESPORTS WORLD CUP");
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
@@ -56,6 +56,7 @@ public final class MatchDataUtil {
             throws IOException, InterruptedException {
 
         List<UpcomingMatch> matches = getUpcomingMatches();
+        System.out.println(matches.size());
 
         if (!tierOneOnly) return matches;
 
@@ -160,6 +161,8 @@ public final class MatchDataUtil {
     private static boolean isTierOneEvent(BaseMatch match) {
         String event = match.getEventName();
         if (event == null) return false;
+
+        //System.out.println("Event name: " + event + " T1? : "+TIER_ONE_KEYWORDS.stream().anyMatch(event::contains));
 
         event = event.toUpperCase();
         return TIER_ONE_KEYWORDS.stream().anyMatch(event::contains);

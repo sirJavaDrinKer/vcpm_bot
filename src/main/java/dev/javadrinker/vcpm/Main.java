@@ -27,6 +27,7 @@ public class Main {
     private static JDA jda;
 
     public static final String VLRAPI_SELF = config.get("VLRAPI_SELF");
+    public static final String VLRTEAMAPI_SELF = config.get("VLRTEAMAPI_SELF");
 
     private static long startTime;
 
@@ -43,7 +44,8 @@ public class Main {
                         new ToggleFeatureCommand(),
                         new BotInformationCommand(),
                         new NewsCycle(),
-                        new ResetLeaderboard()
+                        new ResetLeaderboard(),
+                        new RestoreLeaderboard()
                 )
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT,
@@ -98,10 +100,10 @@ public class Main {
                 System.out.println("Clearing existing commands for guild [" + guild.getId() + "].");
                 AtomicInteger waitlist = new AtomicInteger(existingCommands.size());
                 for (var command : existingCommands) {
-                    /*guild.deleteCommandById(command.getId()).queue(cmd -> {
+                    guild.deleteCommandById(command.getId()).queue(cmd -> {
                         System.out.println("Deleted command [" + command.getName() + "] for guild [" + guild.getId() + "].");
                         waitlist.addAndGet(-1);
-                    });*/
+                    });
                 }
 
                 while (waitlist.get() > 0) {
@@ -130,6 +132,9 @@ public class Main {
                         .addOption(OptionType.BOOLEAN, "enabled", "either disable or enable predictions for this server", true)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
                 Objects.requireNonNull(jda.getGuildById(guild.getId()).upsertCommand("bot-information", "Get information about the bot."))
+                        .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
+                Objects.requireNonNull(jda.getGuildById(guild.getId())).upsertCommand("restore-leaderboard", "Restores the leaderboard to a previous state.")
+                        .addOption(OptionType.STRING, "code", "The restoration code provided upon a reset.", true)
                         .queueAfter(1, java.util.concurrent.TimeUnit.SECONDS);
             });
         }

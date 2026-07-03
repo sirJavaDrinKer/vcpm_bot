@@ -8,10 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ServerDataUtil {
 
@@ -243,6 +240,26 @@ public final class ServerDataUtil {
        ===== USER DATA =========
        ========================= */
 
+    public static String zeroOutAllUserData(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        String restoreCode = generateRestoreCode(serverId);
+        server.user_data.values().forEach(user -> {
+            user.score = 0;
+            user.total_predictions_made = 0;
+        });
+        save();
+        return restoreCode;
+    }
+
+    public static String resetAllUserData(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        String restoreCode = generateRestoreCode(serverId);
+        // Clearing the map removes all users from this server's JSON node
+        server.user_data.clear();
+        save();
+        return restoreCode;
+    }
+
     public static UserData getOrCreateUser(
             String serverId,
             String userId
@@ -286,6 +303,58 @@ public final class ServerDataUtil {
     ) {
         getOrCreateUser(serverId, userId).total_predictions_made++;
         save();
+    }
+
+    /* =========================
+       ===== BACKUP/RESTORE ====
+       ========================= */
+
+    /**
+     * Generates a Base64 encoded JSON string representing the server's current data.
+     * This acts as a single-string "restore code".
+     */
+    public static String generateRestoreCode(String serverId) {
+        ServerData server = getOrCreateServer(serverId);
+        try {
+            // Convert the ServerData object to a JSON string
+            String json = MAPPER.writeValueAsString(server);
+
+            // Encode to Base64 for easy copy/pasting
+            return Base64.getEncoder().encodeToString(json.getBytes());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate restore code for server: " + serverId, e);
+        }
+    }
+
+    /**
+     * Restores server data from a Base64 encoded JSON string.
+     * * @return true if successful, false if the code was invalid or corrupted.
+     */
+    public static boolean restoreFromCode(String serverId, String restoreCode) {
+        init(); // Ensure map is initialized
+        try {
+            // Decode the Base64 string back into raw JSON
+            byte[] decodedBytes = Base64.getDecoder().decode(restoreCode);
+            String json = new String(decodedBytes);
+
+            // Parse the JSON back into a ServerData object
+            ServerData restoredData = MAPPER.readValue(json, ServerData.class);
+
+            // Overwrite the current server data in the map
+            SERVER_DATA.put(serverId, restoredData);
+
+            // Save the updated map to the main server_data.json file
+            save();
+            return true;
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid Base64 restore code provided for server: " + serverId);
+            return false;
+        } catch (Exception e) {
+            System.err.println("Failed to parse restored data for server: " + serverId);
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /* =========================

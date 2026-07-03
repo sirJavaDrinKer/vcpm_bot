@@ -20,22 +20,35 @@ import static dev.javadrinker.vcpm.util.polls.WinnerUtil.getWinnerTeam;
 
 public class PredictionCycle {
     public static void gamesAnnounceCheck(Guild guild) {
+        System.out.println("Checking for upcoming matches in guild: " + guild.getName());
         List<MatchDataUtil.UpcomingMatch> upcoming;
         try {
+            System.out.println("Fetching upcoming matches...");
             upcoming = MatchDataUtil.getUpcomingMatches(true);
+            System.out.println("Fetched " + upcoming.size() + " upcoming matches.");
         } catch (IOException | InterruptedException e) {
+            System.out.println("Failed to fetch upcoming matches: " + e.getMessage());
             throw new RuntimeException(e);
         }
 
         for (MatchDataUtil.UpcomingMatch matchSegment : upcoming) {
+            System.out.println("Processing match: " + matchSegment.getMatchId() + " - " + matchSegment.team1 + " vs " + matchSegment.team2);
+
+            if (matchSegment.team1.equals("TBD") || matchSegment.team2.equals("TBD")) {
+                System.out.println("Match " + matchSegment.getMatchId() + " has TBD teams. Skipping.");
+                continue;
+            }
+
             boolean upcomingFound = UnixConversion.unixTimestampToMillis(matchSegment.unix_timestamp) - System.currentTimeMillis() < 12 * 60 * 60 * 1000;
             ServerDataUtil.ServerData serverDataUtil = ServerDataUtil.getOrCreateServer(guild.getId());
 
             if (!upcomingFound) {
+                System.out.println("Match " + matchSegment.getMatchId() + " is not within the next 12 hours. Skipping.");
                 continue;
             }
 
             if (serverDataUtil.prediction_ids.containsKey(matchSegment.getMatchId())) {
+                System.out.println("Prediction for match " + matchSegment.getMatchId() + " already exists. Skipping.");
                 continue;
             }
 

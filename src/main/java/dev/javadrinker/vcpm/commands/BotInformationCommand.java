@@ -44,7 +44,9 @@ public class BotInformationCommand extends ListenerAdapter implements EventListe
             "`/stats`\n" +
             "`/set-channel`\n" +
             "`/feature-request`\n" +
-            "`/bot-information`",
+            "`/bot-information`\n" +
+            "`/reset-leaderboard`\n" +
+            "`/restore-leaderboard`",
         true);
 
         embedBuilder.addField("Functions",
@@ -54,12 +56,14 @@ public class BotInformationCommand extends ListenerAdapter implements EventListe
             "`:` View your or other's stats.\n" +
             "`:` Set predict/remind/news channel.\n" +
             "`:` Request features, report bugs.\n" +
-            "`:` Look at bot info.",
+            "`:` Look at bot info.\n" +
+            "`:` Reset the leaderboard.\n" +
+            "`:` Restore the leaderboard with a restore code.",
         true);
 
         embedBuilder.addField("Version & Notes", "v2.2 Notable additions are as follows:\n" +
                 "- Significant overhauls to the news-cycle system.\n" +
-                "- Added manual player data reset.",false);
+                "- Added manual player data reset and restore.",false);
 
         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 

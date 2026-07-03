@@ -2,6 +2,7 @@ package dev.javadrinker.vcpm.util.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.javadrinker.vcpm.Main;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public final class TeamDataUtil {
 
     private static final String BASE_URL =
-            "https://vlr.orlandomm.net/api/v1/teams";
+            Main.VLRTEAMAPI_SELF+"api/v1/teams";
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
@@ -126,6 +127,11 @@ public final class TeamDataUtil {
 
     public static TeamSummary getTeamByName(String name) {
         if (!LOADED) loadFromDisk();
+        if(name==null || name.isEmpty()) return null;
+        if(!TEAM_NAME_CACHE.containsKey(normalize(name))) {
+            System.err.println("Team not found: " + name);
+            return null;
+        }
         return TEAM_NAME_CACHE.get(normalize(name));
     }
 

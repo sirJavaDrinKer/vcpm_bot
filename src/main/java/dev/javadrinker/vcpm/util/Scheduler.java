@@ -28,20 +28,23 @@ public class Scheduler {
             try {
                 if (!TeamDataUtil.isFileCacheEmpty()) {
                     updateStatus(jda);
-                    for(Guild guild : jda.getGuilds()) {
-                        if (ServerDataUtil.getPredictionsEnabled(guild.getId())) {
-                            gamesAnnounceCheck(guild);
-                            checkForLiveGames(guild);
-                            checkForPastGames(guild);
-                        }
-
-                        NewsCycle.compareAndCleanArticleLists(guild);
-                        ReminderCycle.sendNewReminders(guild);
-                        ReminderCycle.removeOldReminders(guild);
-
-                    }
                 } else {
                     jda.getPresence().setActivity(Activity.watching("Loading teams after restart..."));
+                }
+
+                for(Guild guild : jda.getGuilds()) {
+                    if (ServerDataUtil.getPredictionsEnabled(guild.getId())) {
+                        System.out.println("Checking predictions for guild: " + guild.getName());
+                        gamesAnnounceCheck(guild);
+                        checkForLiveGames(guild);
+                        checkForPastGames(guild);
+                    }
+
+                    System.out.println("Checking news and reminders for guild: " + guild.getName());
+                    NewsCycle.compareAndCleanArticleLists(guild);
+                    ReminderCycle.sendNewReminders(guild);
+                    ReminderCycle.removeOldReminders(guild);
+
                 }
 
             } catch (Exception e) {
